@@ -236,3 +236,26 @@ kms policy
 		}
 	]
 }
+
+#fix the cloudwatch log 
+
+{
+  "Sid": "AllowCloudWatchLogsEncryptionContext",
+  "Effect": "Allow",
+  "Principal": {
+    "Service": "logs.eu-west-2.amazonaws.com"
+  },
+  "Action": [
+    "kms:Encrypt",
+    "kms:Decrypt",
+    "kms:ReEncrypt*",
+    "kms:GenerateDataKey*",
+    "kms:DescribeKey"
+  ],
+  "Resource": "*",
+  "Condition": {
+    "ArnLike": {
+      "kms:EncryptionContext:aws:logs:arn": "arn:aws:logs:eu-west-2:732822664028:log-group:*"
+    }
+  }
+}

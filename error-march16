@@ -259,3 +259,15 @@ kms policy
     }
   }
 }
+
+issue tgw routing and prpagation
+
+aws_ec2_transit_gateway_route_table_association.vpn_assoc["vpn-0"]: Creation complete after 46s [id=tgw-rtb-02c7c1e83dc143434_tgw-attach-006e5c78c8eaba483]
+╷
+│ Error: creating EC2 Transit Gateway Route Table Propagation (tgw-rtb-02c7c1e83dc143434_tgw-attach-006e5c78c8eaba483): operation error EC2: EnableTransitGatewayRouteTablePropagation, https response error StatusCode: 400, RequestID: 7174c62b-432d-46a3-87d0-8a61a0760161, api error TransitGatewayRouteTablePropagation.Duplicate: Propagation tgw-attach-006e5c78c8eaba483 already exists in Transit Gateway Route Table tgw-rtb-02c7c1e83dc143434.
+│ 
+│   with aws_ec2_transit_gateway_route_table_propagation.vpn_prop["vpn-0"],
+│   on main.tf line 74, in resource "aws_ec2_transit_gateway_route_table_propagation" "vpn_prop":
+│   74: resource "aws_ec2_transit_gateway_route_table_propagation" "vpn_prop" {
+│ 
+

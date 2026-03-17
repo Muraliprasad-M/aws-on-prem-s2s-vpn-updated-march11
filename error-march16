@@ -106,3 +106,133 @@ resource "aws_cloudwatch_log_group" "vpn_tunnel_logs" {
     { Name = "onprem-${var.domain}-${each.key}-tunnel-vpn-log" }
   )
 }
+
+kms policy
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "RootAdmin",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "arn:aws:iam::732822664028:root"
+			},
+			"Action": "kms:*",
+			"Resource": "arn:aws:kms:eu-west-2:732822664028:key/6bdb429b-1b63-4f69-9720-b2b1201760ce"
+		},
+		{
+			"Sid": "KeyAdminRole",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "arn:aws:iam::732822664028:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_AWSAdministratorAccess_3a8a91a6160e4b3a"
+			},
+			"Action": [
+				"kms:Update*",
+				"kms:UntagResource",
+				"kms:TagResource",
+				"kms:ScheduleKeyDeletion",
+				"kms:RotateKeyOnDemand",
+				"kms:Revoke*",
+				"kms:Put*",
+				"kms:List*",
+				"kms:Get*",
+				"kms:Enable*",
+				"kms:Disable*",
+				"kms:Describe*",
+				"kms:Delete*",
+				"kms:Create*",
+				"kms:CancelKeyDeletion"
+			],
+			"Resource": "arn:aws:kms:eu-west-2:732822664028:key/6bdb429b-1b63-4f69-9720-b2b1201760ce"
+		},
+		{
+			"Sid": "AllowCloudWatchLogs",
+			"Effect": "Allow",
+			"Principal": {
+				"Service": "logs.eu-west-2.amazonaws.com"
+			},
+			"Action": [
+				"kms:ReEncrypt*",
+				"kms:GenerateDataKey*",
+				"kms:GenerateDataKey",
+				"kms:Encrypt",
+				"kms:DescribeKey",
+				"kms:Decrypt",
+				"kms:CreateGrant"
+			],
+			"Resource": "arn:aws:kms:eu-west-2:732822664028:key/6bdb429b-1b63-4f69-9720-b2b1201760ce",
+			"Condition": {
+				"Bool": {
+					"kms:GrantIsForAWSResource": "true"
+				}
+			}
+		},
+		{
+			"Sid": "AllowFlowLogs",
+			"Effect": "Allow",
+			"Principal": {
+				"Service": "delivery.logs.amazonaws.com"
+			},
+			"Action": [
+				"kms:GenerateDataKey",
+				"kms:Encrypt",
+				"kms:DescribeKey",
+				"kms:Decrypt"
+			],
+			"Resource": "arn:aws:kms:eu-west-2:732822664028:key/6bdb429b-1b63-4f69-9720-b2b1201760ce"
+		},
+		{
+			"Sid": "AllowNetworkFirewall",
+			"Effect": "Allow",
+			"Principal": {
+				"Service": "network-firewall.amazonaws.com"
+			},
+			"Action": [
+				"kms:ReEncrypt*",
+				"kms:GenerateDataKey",
+				"kms:Encrypt",
+				"kms:DescribeKey",
+				"kms:Decrypt",
+				"kms:CreateGrant"
+			],
+			"Resource": "arn:aws:kms:eu-west-2:732822664028:key/6bdb429b-1b63-4f69-9720-b2b1201760ce"
+		},
+		{
+			"Sid": "AllowSNS",
+			"Effect": "Allow",
+			"Principal": {
+				"Service": "sns.amazonaws.com"
+			},
+			"Action": [
+				"kms:ReEncrypt*",
+				"kms:GenerateDataKey*",
+				"kms:Encrypt",
+				"kms:DescribeKey",
+				"kms:Decrypt"
+			],
+			"Resource": "arn:aws:kms:eu-west-2:732822664028:key/6bdb429b-1b63-4f69-9720-b2b1201760ce",
+			"Condition": {
+				"StringEquals": {
+					"kms:ViaService": "sns.eu-west-2.amazonaws.com",
+					"aws:SourceAccount": "732822664028"
+				}
+			}
+		},
+		{
+			"Sid": "AllowTerraformExecutionRoleUseKey",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "arn:aws:iam::732822664028:role/TerraformExecutionRole"
+			},
+			"Action": [
+				"kms:Encrypt",
+				"kms:Decrypt",
+				"kms:ReEncrypt*",
+				"kms:GenerateDataKey*",
+				"kms:DescribeKey",
+				"kms:CreateGrant"
+			],
+			"Resource": "*"
+		}
+	]
+}
